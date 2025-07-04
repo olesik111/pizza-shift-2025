@@ -32,7 +32,7 @@ fun PizzaCard (
     pizza: Pizza,
     onClick: () -> Unit,
     modifier: Modifier = Modifier
-){
+) {
         Row {
             Image(
                 painter = painterResource(id = pizza.image),

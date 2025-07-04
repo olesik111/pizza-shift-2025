@@ -4,6 +4,8 @@ package com.example.pizzaproject
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
+import androidx.compose.animation.EnterTransition
+import androidx.compose.animation.ExitTransition
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
@@ -12,6 +14,9 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.navigation.compose.NavHost
+import androidx.navigation.compose.composable
+import androidx.navigation.compose.rememberNavController
 import com.example.pizzaproject.ui.theme.PizzaProjectTheme
 
 class MainActivity : ComponentActivity() {
@@ -19,33 +24,60 @@ class MainActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
         setContent {
             PizzaProjectTheme {
-                PizzaListScreen(onPizzaClick = {})
+                PizzaApp()
             }
         }
     }
 }
 
 @Composable
-fun PizzaListScreen(onPizzaClick: (Pizza) -> Unit) {
-    val pizzaList = PizzaVariants.getPizza()
+fun PizzaApp() {
+    val navController = rememberNavController()
 
-    LazyColumn(
-        modifier = Modifier.padding(16.dp),
-        verticalArrangement = Arrangement.spacedBy(16.dp)
-    ) {
-        items(pizzaList) { pizza ->
-            PizzaCard(
-                pizza = pizza,
-                onClick = { onPizzaClick(pizza) }
-            )
+    MaterialTheme {
+        Scaffold(
+            bottomBar = { BottomNavigationBar(navController) }
+        ) { paddingValues ->
+            NavHost(
+                navController = navController,
+                startDestination = Screen.Main.route,
+                modifier = Modifier.padding(paddingValues),
+            ) {
+                composable(Screen.Main.route) {
+                    PizzaListScreen(
+                        modifier = Modifier.fillMaxSize(),
+                        onPizzaClick = {}
+                    )
+                }
+                composable(Screen.Profile.route) { ProfileScreen() }
+                composable(Screen.Orders.route) { OrdersScreen() }
+                composable(Screen.Cart.route) { CartScreen() }
+            }
         }
     }
 }
+
+@Composable
+fun ProfileScreen() {
+    Text("Профиль")
+}
+
+@Composable
+fun OrdersScreen() {
+    Text("Заказы")
+}
+
+@Composable
+fun CartScreen() {
+    Text("Корзина")
+}
+
+
 
 @Preview(showBackground = true)
 @Composable
 fun PizzaAppPreview() {
     PizzaProjectTheme {
-        PizzaListScreen(onPizzaClick = {})
+        PizzaApp()
     }
 }
