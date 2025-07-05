@@ -64,7 +64,7 @@ fun PizzaCard (
                 )
                 Spacer(modifier = Modifier.height(7.dp))
                 Text(
-                    text = "от ${pizza.price} ₽",
+                    text = "от ${pizza.priceSmall} ₽",
                     fontSize = 22.sp,
                     fontWeight = FontWeight.Medium
                 )

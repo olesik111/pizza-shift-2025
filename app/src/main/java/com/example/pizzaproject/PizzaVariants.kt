@@ -11,7 +11,9 @@ object PizzaVariants {
             id = 1,
             name = "Pepperoni",
             description = "Peperroni pizza with spicy sausages",
-            price = 300,
+            priceSmall = 300,
+            priceMedium = 0,
+            priceLarge = 34,
             image = R.drawable.pepperoni,
             toppings = listOf(toppings[0], toppings[1], toppings[2])
         ),
@@ -19,34 +21,12 @@ object PizzaVariants {
             id = 2,
             name = "Cheese pizza",
             description = "Cheese pizza with tomato sauce and cheese",
-            price = 300,
+            priceSmall = 300,
+            priceMedium = 23,
+            priceLarge = 4343,
             image = R.drawable.margherita,
             toppings = listOf(toppings[0], toppings[1])
         ),
-        Pizza(
-            id = 3,
-            name = "Cheese pizza",
-            description = "Cheese pizza with tomato sauce and cheese",
-            price = 300,
-            image = R.drawable.margherita,
-            toppings = listOf(toppings[0], toppings[1])
-        ),
-        Pizza(
-            id = 4,
-            name = "Cheese pizza",
-            description = "Cheese pizza with tomato sauce and cheese",
-            price = 300,
-            image = R.drawable.margherita,
-            toppings = listOf(toppings[0], toppings[1])
-        ),
-        Pizza(
-            id = 5,
-            name = "Cheese pizza",
-            description = "Cheese pizza with tomato sauce and cheese",
-            price = 300,
-            image = R.drawable.margherita,
-            toppings = listOf(toppings[0], toppings[1])
-        )
 
     )
     fun getAllToppings() = toppings

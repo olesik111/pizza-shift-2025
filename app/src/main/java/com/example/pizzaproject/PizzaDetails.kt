@@ -2,7 +2,10 @@ package com.example.pizzaproject
 
 import android.annotation.SuppressLint
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
@@ -16,8 +19,11 @@ import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.items
 import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
@@ -35,6 +41,7 @@ import androidx.navigation.NavController
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.compose.runtime.derivedStateOf
+import androidx.compose.ui.graphics.Color
 
 @Composable
 fun PizzaDetailScreen(
@@ -45,10 +52,16 @@ fun PizzaDetailScreen(
 
     var selectedToppings by remember { mutableStateOf<List<Topping>>(emptyList()) }
     val availableToppings = remember { pizza.toppings }
+    var selectedSize by remember { mutableStateOf(PizzaSize.MEDIUM) }
 
     val totalPrice by remember {
         derivedStateOf {
-            pizza.price + selectedToppings.sumOf { it.price }
+            val basePrice = when(selectedSize) {
+                PizzaSize.SMALL -> pizza.priceSmall
+                PizzaSize.MEDIUM -> pizza.priceMedium
+                PizzaSize.LARGE -> pizza.priceLarge
+            }
+            basePrice + selectedToppings.sumOf { it.price }
         }
     }
 
@@ -83,15 +96,42 @@ fun PizzaDetailScreen(
                 style = MaterialTheme.typography.bodyLarge
             )
 
-            Spacer(modifier = Modifier.height(16.dp))
+            Spacer(modifier = Modifier.height(22.dp))
 
-            Text(
-                text = "Цена: от ${pizza.price} ₽",
-                fontSize = 24.sp,
-                fontWeight = FontWeight.Medium
-            )
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(horizontal = 16.dp)
+                    .background(Color.LightGray, RoundedCornerShape(8.dp))
+            ) {
+                PizzaSize.entries.forEach { size ->
+                    val price = when(size) {
+                        PizzaSize.SMALL -> pizza.priceSmall
+                        PizzaSize.MEDIUM -> pizza.priceMedium
+                        PizzaSize.LARGE -> pizza.priceLarge
+                    }
+                    val isSelected = size == selectedSize
 
-            Spacer(modifier = Modifier.height(32.dp))
+                    Box(
+                        modifier = Modifier
+                            .weight(1f)
+                            .clickable { selectedSize = size }
+                            .background(
+                                if (isSelected) Color.White else Color.Transparent,
+                                RoundedCornerShape(8.dp)
+                            )
+                            .padding(8.dp),
+                        contentAlignment = Alignment.Center
+                    ) {
+                        Column(horizontalAlignment = Alignment.CenterHorizontally) {
+                            Text(size.displayName, fontSize = 14.sp, fontWeight = FontWeight.Medium)
+                            Text("$price ₽", fontSize = 12.sp)
+                        }
+                    }
+                }
+            }
+
+            Spacer(modifier = Modifier.height(33.dp))
 
             Text(
                 text = "Добавить",
@@ -112,9 +152,22 @@ fun PizzaDetailScreen(
             )
             Spacer(modifier = Modifier.height(32.dp))
 
+            Text(
+                text = "Итого: ${totalPrice}",
+                fontSize = 28.sp,
+                fontWeight = FontWeight.Medium
+            )
+
 
             Button(
-                onClick = { /* Добавить в корзину */ }
+                onClick = { /* Добавить в корзину */ },
+                shape = RoundedCornerShape(8.dp),
+                colors = ButtonDefaults.buttonColors(
+                    containerColor = Color(0xFFF4511E),
+                    contentColor = Color.White
+                ),
+                modifier = Modifier.padding(8.dp)
+
             ) {
                 Text("Добавить в корзину")
             }
