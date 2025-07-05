@@ -1,17 +1,30 @@
 package com.example.pizzaproject
 
+import android.annotation.SuppressLint
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.lazy.grid.GridCells
+import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
+import androidx.compose.foundation.lazy.grid.items
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Button
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.derivedStateOf
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
@@ -19,6 +32,9 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.setValue
+import androidx.compose.runtime.derivedStateOf
 
 @Composable
 fun PizzaDetailScreen(
@@ -27,12 +43,21 @@ fun PizzaDetailScreen(
 ) {
     val pizza = PizzaVariants.getPizza().find { it.id == pizzaId } ?: PizzaVariants.getPizza().first()
 
+    var selectedToppings by remember { mutableStateOf<List<Topping>>(emptyList()) }
+    val availableToppings = remember { pizza.toppings }
+
+    val totalPrice by remember {
+        derivedStateOf {
+            pizza.price + selectedToppings.sumOf { it.price }
+        }
+    }
+
     Scaffold { paddingValues ->
         Column(
             modifier = Modifier
                 .fillMaxSize()
                 .padding(paddingValues)
-                .padding(16.dp),
+                .verticalScroll(rememberScrollState()),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
             Image(
@@ -61,17 +86,66 @@ fun PizzaDetailScreen(
             Spacer(modifier = Modifier.height(16.dp))
 
             Text(
-                text = "Цена: ${pizza.price} ₽",
+                text = "Цена: от ${pizza.price} ₽",
                 fontSize = 24.sp,
                 fontWeight = FontWeight.Medium
             )
 
             Spacer(modifier = Modifier.height(32.dp))
 
+            Text(
+                text = "Добавить",
+                fontSize = 28.sp,
+                fontWeight = FontWeight.Medium
+            )
+
+            GridToppings(
+                toppings = availableToppings,
+                selectedToppings = selectedToppings,
+                onToppingSelected = { topping ->
+                    selectedToppings = if (selectedToppings.contains(topping)) {
+                        selectedToppings - topping
+                    } else {
+                        selectedToppings + topping
+                    }
+                }
+            )
+            Spacer(modifier = Modifier.height(32.dp))
+
+
             Button(
                 onClick = { /* Добавить в корзину */ }
             ) {
                 Text("Добавить в корзину")
+            }
+        }
+    }
+}
+
+@Composable
+fun GridToppings(
+    toppings: List<Topping>,
+    selectedToppings: List<Topping>,
+    onToppingSelected: (Topping) -> Unit
+) {
+    Column(modifier = Modifier.fillMaxWidth()) {
+        toppings.chunked(2).forEach { row ->
+
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.SpaceEvenly
+            ) {
+                row.forEach { topping ->
+                    ToppingCard(
+                        topping = topping,
+                        isSelected = selectedToppings.contains(topping),
+                        onToppingSelected = onToppingSelected,
+                        modifier = Modifier
+                            .height(150.dp)
+                            .weight(1f)
+                            .padding(8.dp)
+                    )
+                }
             }
         }
     }

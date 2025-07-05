@@ -49,4 +49,5 @@ object PizzaVariants {
         )
 
     )
+    fun getAllToppings() = toppings
 }
