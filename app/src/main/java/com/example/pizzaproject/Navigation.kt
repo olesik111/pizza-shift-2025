@@ -20,6 +20,9 @@ sealed class Screen(val route: String, val title: String, val icon: ImageVector)
     object Orders : Screen("orders", "Заказы", Icons.Default.List)
     object Cart : Screen("cart", "Корзина", Icons.Default.ShoppingCart)
     object Profile : Screen("profile", "Профиль", Icons.Default.Person)
+    object PizzaDetail : Screen("pizza_detail/{pizzaId}", "Детали пиццы", Icons.Default.Home) {
+        fun createRoute(pizzaId: Int) = "pizza_detail/$pizzaId"
+    }
 }
 
 @Composable
