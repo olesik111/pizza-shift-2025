@@ -20,6 +20,7 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.input.pointer.PointerInputModifier
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
@@ -32,7 +33,16 @@ fun PizzaCard (
     pizza: Pizza,
     onClick: () -> Unit,
     modifier: Modifier = Modifier
-){
+) {
+    Card(
+        modifier = modifier
+            .fillMaxWidth()
+            .clickable(onClick = onClick),
+        colors = CardDefaults.cardColors(
+            containerColor = Color.Transparent
+        ),
+        elevation = CardDefaults.cardElevation(defaultElevation = 0.dp)
+    ) {
         Row {
             Image(
                 painter = painterResource(id = pizza.image),
@@ -54,14 +64,14 @@ fun PizzaCard (
                 )
                 Spacer(modifier = Modifier.height(7.dp))
                 Text(
-                    text = "от ${pizza.price} ₽",
+                    text = "от ${pizza.priceSmall} ₽",
                     fontSize = 22.sp,
                     fontWeight = FontWeight.Medium
                 )
             }
         }
     }
-
+}
 /*@Composable
 fun MainScreen(modifier: Modifier = Modifier) {
     Scaffold(modifier = Modifier){
