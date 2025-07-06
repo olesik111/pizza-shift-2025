@@ -35,10 +35,17 @@ private val LightColorScheme = lightColorScheme(
 
 @Composable
 fun PizzaProjectTheme(
+    darkTheme: Boolean = isSystemInDarkTheme(),
     content: @Composable () -> Unit
 ) {
+    val colorScheme = if (darkTheme) {
+        DarkColorScheme
+    } else {
+        LightColorScheme
+    }
+
     MaterialTheme(
-        colorScheme = lightColorScheme(),
+        colorScheme = colorScheme,
         typography = Typography,
         content = content
     )

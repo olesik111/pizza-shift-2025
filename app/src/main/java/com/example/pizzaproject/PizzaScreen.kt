@@ -19,24 +19,39 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 
 @Composable
 fun PizzaListScreen(
     modifier: Modifier = Modifier,
+    isDarkTheme: Boolean,
+    onThemeChange: () -> Unit,
     onPizzaClick: (Pizza) -> Unit
 ) {
     val pizzaList = PizzaVariants.getPizza()
     Column {
         Row(
-            modifier = Modifier.fillMaxWidth().padding(8.dp),
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(16.dp),
+            horizontalArrangement = Arrangement.SpaceBetween,
             verticalAlignment = Alignment.CenterVertically
         ) {
             Text(
                 text = "Главная",
-                style = MaterialTheme.typography.headlineMedium,
-                modifier = Modifier.weight(1f)
+                style = MaterialTheme.typography.headlineMedium
             )
+
+            IconButton(onClick = onThemeChange) {
+                Icon(
+                    painter = painterResource(
+                        if (isDarkTheme) R.drawable.ic_light_mode
+                        else R.drawable.ic_dark_mode
+                    ),
+                    contentDescription = "Сменить тему"
+                )
+            }
         }
 
         LazyColumn(

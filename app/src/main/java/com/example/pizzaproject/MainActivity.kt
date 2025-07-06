@@ -11,6 +11,10 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -25,15 +29,23 @@ class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContent {
-            PizzaProjectTheme {
-                PizzaApp()
+            var isDarkTheme by remember { mutableStateOf(false) }
+
+            PizzaProjectTheme(darkTheme = isDarkTheme) {
+                PizzaApp(
+                    isDarkTheme = isDarkTheme,
+                    onThemeChange = { isDarkTheme = !isDarkTheme }
+                )
             }
         }
     }
 }
 
 @Composable
-fun PizzaApp() {
+fun PizzaApp(
+    isDarkTheme: Boolean,
+    onThemeChange: () -> Unit
+) {
     val navController = rememberNavController()
 
     MaterialTheme {
@@ -48,6 +60,8 @@ fun PizzaApp() {
                 composable(Screen.Main.route) {
                     PizzaListScreen(
                         modifier = Modifier.fillMaxSize(),
+                        isDarkTheme = isDarkTheme,
+                        onThemeChange = onThemeChange,
                         onPizzaClick = { pizza ->
                             navController.navigate(Screen.PizzaDetail.createRoute(pizza.id))
                         }
@@ -63,7 +77,7 @@ fun PizzaApp() {
                     )
                 ) { backStackEntry ->
                     val pizzaId = backStackEntry.arguments?.getInt("pizzaId")
-                    PizzaDetailScreen(navController, pizzaId)
+                    PizzaDetailScreen(navController, isDarkTheme, pizzaId)
                 }
             }
         }
@@ -91,6 +105,9 @@ fun CartScreen() {
 @Composable
 fun PizzaAppPreview() {
     PizzaProjectTheme {
-        PizzaApp()
+        PizzaApp(
+            isDarkTheme = false,
+            onThemeChange = {}
+        )
     }
 }

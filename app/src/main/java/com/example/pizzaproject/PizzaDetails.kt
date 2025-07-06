@@ -51,6 +51,7 @@ import androidx.compose.ui.text.style.TextAlign
 @Composable
 fun PizzaDetailScreen(
     navController: NavController,
+    isDarkTheme: Boolean,
     pizzaId: Int?
 ) {
     val pizza = PizzaVariants.getPizza().find { it.id == pizzaId } ?: PizzaVariants.getPizza().first()
@@ -128,7 +129,10 @@ fun PizzaDetailScreen(
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(horizontal = 16.dp)
-                    .background(Color.LightGray, RoundedCornerShape(8.dp))
+                    .background(
+                        if (isDarkTheme) Color(0xFF1E1E1E) else Color.LightGray,
+                        RoundedCornerShape(8.dp)
+                    )
             ) {
                 PizzaSize.entries.forEach { size ->
                     val price = when(size) {
@@ -143,15 +147,28 @@ fun PizzaDetailScreen(
                             .weight(1f)
                             .clickable { selectedSize = size }
                             .background(
-                                if (isSelected) Color.White else Color.Transparent,
+                                if (isSelected) {
+                                    if (isDarkTheme) Color(0xFF333333) else Color.White
+                                } else {
+                                    Color.Transparent
+                                },
                                 RoundedCornerShape(8.dp)
                             )
                             .padding(8.dp),
                         contentAlignment = Alignment.Center
                     ) {
                         Column(horizontalAlignment = Alignment.CenterHorizontally) {
-                            Text(size.displayName, fontSize = 14.sp, fontWeight = FontWeight.Medium)
-                            Text("$price ₽", fontSize = 12.sp)
+                            Text(
+                                size.displayName,
+                                fontSize = 14.sp,
+                                fontWeight = FontWeight.Medium,
+                                color = if (isDarkTheme) Color.White else Color.Black
+                            )
+                            Text(
+                                "$price ₽",
+                                fontSize = 12.sp,
+                                color = if (isDarkTheme) Color.LightGray else Color.DarkGray
+                            )
                         }
                     }
                 }
@@ -174,7 +191,8 @@ fun PizzaDetailScreen(
                     } else {
                         selectedToppings + topping
                     }
-                }
+                },
+                isDarkTheme = isDarkTheme
             )
             Spacer(modifier = Modifier.height(32.dp))
 
@@ -205,7 +223,9 @@ fun PizzaDetailScreen(
 fun GridToppings(
     toppings: List<Topping>,
     selectedToppings: List<Topping>,
-    onToppingSelected: (Topping) -> Unit
+    onToppingSelected: (Topping) -> Unit,
+    isDarkTheme: Boolean,
+    modifier: Modifier = Modifier
 ) {
     Column(modifier = Modifier.fillMaxWidth()) {
         toppings.chunked(2).forEach { row ->
@@ -219,6 +239,7 @@ fun GridToppings(
                         topping = topping,
                         isSelected = selectedToppings.contains(topping),
                         onToppingSelected = onToppingSelected,
+                        isDarkTheme = isDarkTheme,
                         modifier = Modifier
                             .height(150.dp)
                             .weight(1f)
