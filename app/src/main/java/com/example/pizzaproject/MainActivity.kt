@@ -76,8 +76,8 @@ fun PizzaApp(
                         navArgument("pizzaId") { type = NavType.StringType }
                     )
                 ) { backStackEntry ->
-                    val pizzaId = backStackEntry.arguments?.getInt("pizzaId")
-//                    PizzaDetailScreen(navController, isDarkTheme, pizzaId)
+                    val pizzaId = backStackEntry.arguments?.getString("pizzaId")
+                    PizzaDetailScreen(navController, isDarkTheme, pizzaId)
                 }
             }
         }

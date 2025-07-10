@@ -1,5 +1,6 @@
 package com.example.pizzaproject
 
+import android.util.Log
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
@@ -45,6 +46,7 @@ fun PizzaListScreen(
             val pizzaList = getPizzas()
             state = PizzaListState.Content(pizzaList)
         } catch (e: Exception) {
+            Log.e("PizzaListScreen", "Error loading pizzas", e)
             state = PizzaListState.Error
         }
     }

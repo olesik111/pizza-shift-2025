@@ -1,7 +1,5 @@
 package com.example.pizzaproject
 
-import android.annotation.SuppressLint
-import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.ui.res.stringResource
 import androidx.compose.foundation.clickable
@@ -15,31 +13,25 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.lazy.grid.GridCells
-import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
-import androidx.compose.foundation.lazy.grid.items
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.ArrowBack
+import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
-import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
-import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.derivedStateOf
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -48,45 +40,76 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.style.TextAlign
-
-//@Composable
-//fun PizzaDetailScreen(
-//    navController: NavController,
-//    isDarkTheme: Boolean,
-//    pizzaId: String?
-//) {
-//    val pizza =
-//
-//    var selectedToppings by remember { mutableStateOf<List<Topping>>(emptyList()) }
-//    val availableToppings = remember { pizza.toppings }
-//    var selectedSize by remember { mutableStateOf(PizzaSize.MEDIUM) }
-//
-//    val totalPrice = calculateTotalPrice(pizza, selectedSize, selectedToppings)
-//
-//    Scaffold { paddingValues ->
-//        PizzaDetailContent(
-//            paddingValues = paddingValues,
-//            pizza = pizza,
-//            isDarkTheme = isDarkTheme,
-//            selectedSize = selectedSize,
-//            onSizeSelected = { selectedSize = it },
-//            availableToppings = availableToppings,
-//            selectedToppings = selectedToppings,
-//            onToppingSelected = { topping ->
-//                selectedToppings = if (selectedToppings.contains(topping)) {
-//                    selectedToppings - topping
-//                } else {
-//                    selectedToppings + topping
-//                }
-//            },
-//            totalPrice = totalPrice,
-//            onBackClick = { navController.popBackStack() }
-//        )
-//    }
-//}
+import com.example.pizzaproject.api.NetworkModule.pizzaApi
+import com.example.pizzaproject.api.NetworkModule.pizzaConverter
 
 @Composable
-private fun PizzaDetailContent(
+fun PizzaDetailScreen(
+    navController: NavController,
+    isDarkTheme: Boolean,
+    pizzaId: String?
+) {
+    var state: PizzaDetailsState by remember { mutableStateOf(PizzaDetailsState.Loading) }
+
+    LaunchedEffect(key1 = Unit) {
+        state = PizzaDetailsState.Loading
+        try {
+            if (pizzaId != null) {
+                val pizza = getPizza(pizzaId)
+                state = PizzaDetailsState.Content(pizza)
+            } else {
+                state = PizzaDetailsState.Error
+            }
+        } catch (e: Exception) {
+            state = PizzaDetailsState.Error
+        }
+
+    }
+    when (val currentState = state) {
+        is PizzaDetailsState.Loading -> FullScreenProgressIndicator()
+        is PizzaDetailsState.Error -> ErrorIndicator()
+        is PizzaDetailsState.Content -> PizzaDetailsContent(
+            currentState.pizza,
+            navController,
+            isDarkTheme
+        )
+    }
+
+}
+
+@Composable
+private fun PizzaDetailsContent(pizza: Pizza, navController: NavController, isDarkTheme: Boolean) {
+    var selectedToppings by remember { mutableStateOf<List<Topping>>(emptyList()) }
+    val availableToppings = remember { pizza.toppings }
+    var selectedSize by remember { mutableStateOf(PizzaSize.MEDIUM) }
+
+    val totalPrice = calculateTotalPrice(pizza, selectedSize, selectedToppings)
+
+    Scaffold { paddingValues ->
+        PizzaDetail(
+            paddingValues = paddingValues,
+            pizza = pizza,
+            isDarkTheme = isDarkTheme,
+            selectedSize = selectedSize,
+            onSizeSelected = { selectedSize = it },
+            availableToppings = availableToppings,
+            selectedToppings = selectedToppings,
+            onToppingSelected = { topping ->
+                selectedToppings = if (selectedToppings.contains(topping)) {
+                    selectedToppings - topping
+                } else {
+                    selectedToppings + topping
+                }
+            },
+            totalPrice = totalPrice,
+            onBackClick = { navController.popBackStack() }
+        )
+    }
+}
+
+
+@Composable
+private fun PizzaDetail(
     paddingValues: PaddingValues,
     pizza: Pizza,
     isDarkTheme: Boolean,
@@ -135,7 +158,7 @@ private fun PizzaHeader(name: String, onBackClick: () -> Unit) {
             modifier = Modifier.padding(8.dp)
         ) {
             Icon(
-                imageVector = Icons.Default.ArrowBack,
+                imageVector = Icons.AutoMirrored.Filled.ArrowBack,
                 contentDescription = "Назад"
             )
         }
@@ -147,15 +170,6 @@ private fun PizzaHeader(name: String, onBackClick: () -> Unit) {
     }
 }
 
-@Composable
-private fun PizzaImage(imageRes: Int, contentDescription: String) {
-    Image(
-        painter = painterResource(id = imageRes),
-        contentDescription = contentDescription,
-        modifier = Modifier.size(300.dp)
-    )
-    Spacer(modifier = Modifier.height(16.dp))
-}
 
 @Composable
 private fun PizzaTitle(name: String, description: String) {
@@ -221,6 +235,7 @@ private fun SizeOption(
 ) {
     Box(
         modifier = Modifier
+            .width(120.dp)
             .clickable(onClick = onClick)
             .background(
                 if (isSelected) {
@@ -236,13 +251,14 @@ private fun SizeOption(
         Column(horizontalAlignment = Alignment.CenterHorizontally) {
             Text(
                 stringResource(size.displayNameRes),
-                fontSize = 14.sp,
+                fontSize = 18.sp,
                 fontWeight = FontWeight.Medium,
                 color = if (isDarkTheme) Color.White else Color.Black
             )
             Text(
                 "$price ₽",
-                fontSize = 12.sp,
+                fontSize = 16.sp,
+                fontWeight = FontWeight.Medium,
                 color = if (isDarkTheme) Color.LightGray else Color.DarkGray
             )
         }
@@ -324,7 +340,7 @@ fun GridToppings(
                         onToppingSelected = onToppingSelected,
                         isDarkTheme = isDarkTheme,
                         modifier = Modifier
-                            .height(150.dp)
+                            .height(180.dp)
                             .weight(1f)
                             .padding(8.dp)
                     )
@@ -332,4 +348,9 @@ fun GridToppings(
             }
         }
     }
+}
+
+private suspend fun getPizza(pizzaId: String): Pizza {
+    val pizzaItems = pizzaApi.getPizzas()
+    return pizzaConverter.convert(pizzaItems).first { it.id == pizzaId }
 }

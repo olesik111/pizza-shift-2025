@@ -20,6 +20,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.material3.Text
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.RectangleShape
+import androidx.compose.ui.text.style.TextAlign
 
 @Composable
 fun ToppingCard(
@@ -57,7 +58,8 @@ fun ToppingCard(
             ) {
                 Text(
                     text = topping.name,
-                    color = if (isDarkTheme) Color.White else Color.Black
+                    color = if (isDarkTheme) Color.White else Color.Black,
+                    textAlign = TextAlign.Center
                 )
                 Text(
                     text = "+${topping.price} ₽",
