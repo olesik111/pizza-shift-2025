@@ -21,7 +21,7 @@ sealed class Screen(val route: String, val title: String, val icon: ImageVector)
     object Cart : Screen("cart", "Корзина", Icons.Default.ShoppingCart)
     object Profile : Screen("profile", "Профиль", Icons.Default.Person)
     object PizzaDetail : Screen("pizza_detail/{pizzaId}", "Детали пиццы", Icons.Default.Home) {
-        fun createRoute(pizzaId: Int) = "pizza_detail/$pizzaId"
+        fun createRoute(pizzaId: String) = "pizza_detail/$pizzaId"
     }
 }
 

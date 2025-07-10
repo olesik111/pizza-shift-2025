@@ -1,3 +1,6 @@
 <resources>
     <string name="app_name">PizzaProject</string>
+    <string name="pizza_size_small">Маленькая</string>
+    <string name="pizza_size_medium">Средняя</string>
+    <string name="pizza_size_large">Большая</string>
 </resources>

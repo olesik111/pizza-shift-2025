@@ -73,11 +73,11 @@ fun PizzaApp(
                 composable(
                     route = Screen.PizzaDetail.route,
                     arguments = listOf(
-                        navArgument("pizzaId") { type = NavType.IntType }
+                        navArgument("pizzaId") { type = NavType.StringType }
                     )
                 ) { backStackEntry ->
                     val pizzaId = backStackEntry.arguments?.getInt("pizzaId")
-                    PizzaDetailScreen(navController, isDarkTheme, pizzaId)
+//                    PizzaDetailScreen(navController, isDarkTheme, pizzaId)
                 }
             }
         }

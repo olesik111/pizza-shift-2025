@@ -50,11 +50,7 @@ fun ToppingCard(
                 .padding(8.dp),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
-            Image(
-                modifier = Modifier.size(50.dp),
-                painter = painterResource(id = topping.image),
-                contentDescription = topping.name,
-            )
+            ContextImage(topping.image, 50.dp)
             Column(
                 modifier = Modifier.padding(top = 8.dp),
                 horizontalAlignment = Alignment.CenterHorizontally

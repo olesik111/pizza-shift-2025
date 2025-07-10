@@ -44,11 +44,7 @@ fun PizzaCard (
         elevation = CardDefaults.cardElevation(defaultElevation = 0.dp)
     ) {
         Row {
-            Image(
-                painter = painterResource(id = pizza.image),
-                contentDescription = pizza.name,
-                modifier = Modifier.size(170.dp)
-            )
+            ContextImage(pizza.image, 170.dp)
             Column {
                 Spacer(modifier = Modifier.height(13.dp))
                 Text(

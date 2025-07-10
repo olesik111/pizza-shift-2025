@@ -17,10 +17,18 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
+import com.example.pizzaproject.api.NetworkModule
+import com.example.pizzaproject.api.NetworkModule.pizzaApi
+import com.example.pizzaproject.api.NetworkModule.pizzaConverter
 
 @Composable
 fun PizzaListScreen(
@@ -29,7 +37,18 @@ fun PizzaListScreen(
     onThemeChange: () -> Unit,
     onPizzaClick: (Pizza) -> Unit
 ) {
-    val pizzaList = PizzaVariants.getPizza()
+    var state: PizzaListState by remember { mutableStateOf(PizzaListState.Loading) }
+
+    LaunchedEffect(key1 = Unit) {
+        state = PizzaListState.Loading
+        try {
+            val pizzaList = getPizzas()
+            state = PizzaListState.Content(pizzaList)
+        } catch (e: Exception) {
+            state = PizzaListState.Error
+        }
+    }
+
     Column {
         Row(
             modifier = Modifier
@@ -54,17 +73,41 @@ fun PizzaListScreen(
             }
         }
 
-        LazyColumn(
-            modifier = modifier.padding(16.dp),
-            verticalArrangement = Arrangement.spacedBy(16.dp),
-            contentPadding = PaddingValues(bottom = 16.dp)
-        ) {
-            items(pizzaList) { pizza ->
-                PizzaCard(
-                    pizza = pizza,
-                    onClick = { onPizzaClick(pizza) }
-                )
-            }
+        when (val currentState = state) {
+            PizzaListState.Loading -> FullScreenProgressIndicator()
+            PizzaListState.Error -> ErrorIndicator()
+            is PizzaListState.Content -> PizzaListContent(
+                modifier,
+                onPizzaClick,
+                pizzaList = currentState.pizzas
+            )
+        }
+
+
+    }
+}
+
+@Composable
+private fun PizzaListContent(
+    modifier: Modifier,
+    onPizzaClick: (Pizza) -> Unit,
+    pizzaList: List<Pizza>
+) {
+    LazyColumn(
+        modifier = modifier.padding(16.dp),
+        verticalArrangement = Arrangement.spacedBy(16.dp),
+        contentPadding = PaddingValues(bottom = 16.dp)
+    ) {
+        items(pizzaList) { pizza ->
+            PizzaCard(
+                pizza = pizza,
+                onClick = { onPizzaClick(pizza) }
+            )
         }
     }
+}
+
+private suspend fun getPizzas(): List<Pizza> {
+    val pizzaItems = pizzaApi.getPizzas()
+    return pizzaConverter.convert(pizzaItems)
 }
