@@ -20,28 +20,30 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.material3.Text
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.RectangleShape
+import androidx.compose.ui.text.style.TextAlign
 
 @Composable
 fun ToppingCard(
     topping: Topping,
     isSelected: Boolean,
     onToppingSelected: (Topping) -> Unit,
+    isDarkTheme: Boolean,
     modifier: Modifier = Modifier
 ) {
     Card(
         modifier = modifier
             .fillMaxWidth()
-
             .clickable { onToppingSelected(topping) }
             .padding(4.dp),
         colors = CardDefaults.cardColors(
-            containerColor = Color.White
+            containerColor = if (isDarkTheme) Color(0xFF121212) else Color.White
         ),
         shape = RoundedCornerShape(12.dp),
-        elevation = CardDefaults.cardElevation(
-            defaultElevation = 4.dp
-        ),
-        border = if (isSelected) BorderStroke(2.dp, Color.Black) else null
+        elevation = CardDefaults.cardElevation(defaultElevation = 4.dp),
+        border = if (isSelected) BorderStroke(
+            2.dp,
+            if (isDarkTheme) Color(0xFFBB86FC) else Color.Black
+        ) else null
     ) {
         Column(
             modifier = Modifier
@@ -49,18 +51,20 @@ fun ToppingCard(
                 .padding(8.dp),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
-            Image(
-                modifier = Modifier
-                    .size(50.dp),
-                painter = painterResource(id = topping.image),
-                contentDescription = topping.name,
-            )
+            ContextImage(topping.image, 50.dp)
             Column(
                 modifier = Modifier.padding(top = 8.dp),
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
-                Text(text = topping.name)
-                Text(text = "+${topping.price} ₽")
+                Text(
+                    text = topping.name,
+                    color = if (isDarkTheme) Color.White else Color.Black,
+                    textAlign = TextAlign.Center
+                )
+                Text(
+                    text = "+${topping.price} ₽",
+                    color = if (isDarkTheme) Color.LightGray else Color.DarkGray
+                )
             }
         }
     }

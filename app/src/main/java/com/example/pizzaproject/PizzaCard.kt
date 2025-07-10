@@ -44,11 +44,7 @@ fun PizzaCard (
         elevation = CardDefaults.cardElevation(defaultElevation = 0.dp)
     ) {
         Row {
-            Image(
-                painter = painterResource(id = pizza.image),
-                contentDescription = pizza.name,
-                modifier = Modifier.size(170.dp)
-            )
+            ContextImage(pizza.image, 170.dp)
             Column {
                 Spacer(modifier = Modifier.height(13.dp))
                 Text(
@@ -72,32 +68,3 @@ fun PizzaCard (
         }
     }
 }
-/*@Composable
-fun MainScreen(modifier: Modifier = Modifier) {
-    Scaffold(modifier = Modifier){
-        paddingValues ->
-        Column(
-            modifier = Modifier.padding(paddingValues)
-        ) {
-            val pizzaList = PizzaVariants.getPizza()
-            LazyColumn(
-                modifier = Modifier.padding(16.dp),
-                verticalArrangement = Arrangement.spacedBy(16.dp)
-            ) {
-                items(pizzaList) { pizza ->
-                    PizzaCard(
-                        pizza = pizza,
-                        onClick = {}
-                    )
-                }
-            }
-        }
-    }
-}
-
-
-@Preview
-@Composable
-fun MyApp() {
-    MainScreen()
-}*/
